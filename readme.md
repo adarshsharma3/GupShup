@@ -20,9 +20,10 @@ GupShup is a modern full-stack web application that allows users to chat and ini
     🧠 Smart Session Handling using sessionStorage
 
 🛠️ Tech Stack
-Frontend	Real-Time / Media	State & Backend
-React	Socket.IO (WebSocket)	Zustand (state mgmt)
-Tailwind CSS	WebRTC + Simple-Peer	Appwrite (or Express)
+Frontend	Real-Time & Media	State Management & Backend
+React	Socket.IO (WebSockets)	Zustand (global state)
+Tailwind CSS	WebRTC + Simple-Peer (calls)	Express (Node.js backend API)
+React Router DOM		Appwrite (auth, DB, file storage)
 React Router		
 ## 🖼️ Screenshots
 
@@ -38,24 +39,6 @@ React Router
 ---
 	
 	
-📂 Project Structure (Frontend)
-
-src/
-├── components/
-│   ├── Calls/
-│   ├── messages/
-│   ├── Sidebar/
-│   └── ...
-├── Context/
-│   └── SocketContext.js
-├── Hooks/
-├── Zustand/
-├── pages/
-│   ├── Home.jsx
-│   └── CallPage.jsx
-├── App.jsx
-└── main.jsx
-
 🔧 Getting Started
 1. Clone the Repo
 
@@ -67,17 +50,16 @@ cd gupshup
 npm install
 
 3. Environment Setup
-
-Create a .env file in the root directory and configure your Appwrite or backend service (if used):
-
-VITE_APPWRITE_URL=https://cloud.appwrite.io/v1
-VITE_APPWRITE_PROJECT_ID=your_project_id
-VITE_APPWRITE_DATABASE_ID=your_database_id
+In the backend Directory :
+PORT=""  
+MONGO_DB_URI=""
+SECRET=""
 ...
 
 4. Start the App
 
-npm run dev
+npm run dev (Frontend directory)
+npm run dev (Backend directory )
 
 🧪 How It Works
 
