@@ -1,6 +1,6 @@
 🎙️ GupShup - Real-Time Chat & Voice Call Web App
 
-GupShup is a modern full-stack web application that allows users to chat and initiate real-time voice calls over the internet — built using React, Zustand, WebRTC, and Socket.IO.
+GupShup is a modern full-stack web application that allows users to chat and initiate real-time voice calls over the internet — built using React, Express,MongoDB, Zustand, WebRTC, and Socket.IO.
 🚀 Features
 
     💬 Real-Time Text Chat between users
