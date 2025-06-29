@@ -25,21 +25,44 @@ const VoiceCall = () => {
   // UI state for enhanced experience
   const [callDuration, setCallDuration] = useState(0);
   const [isConnected, setIsConnected] = useState(false);
-  
+  const [isMicReady, setIsMicReady] = useState(false);
+
   // Mock data for demo - replace with your actual values
   // const calleeId = "Taha";
   // const socket = null; // Your socket connection
 
   /* ────────── mic access ────────── */
   useEffect(() => {
-    navigator.mediaDevices.getUserMedia({ audio: true }).then((st) => {
-      streamRef.current = st;
-      if (myAudio.current) myAudio.current.srcObject = st;
-    }).catch(err => console.log("Mic access denied"));
+    navigator.mediaDevices.getUserMedia({ audio: true })
+      .then((st) => {
+        streamRef.current = st;
+        if (myAudio.current) myAudio.current.srcObject = st;
+        setIsMicReady(true); // ✅ mic is ready now
+      })
+      .catch(err => {
+        console.log("Mic access denied");
+        setIsMicReady(false);
+      });
+  
     return () => {
       streamRef.current?.getTracks().forEach((t) => t.stop());
     };
   }, []);
+
+  //For caller when call button pressed 
+  useEffect(() => {
+    if (isCaller && isMicReady && !peerRef.current) {
+      startCall();
+    }
+  }, [isCaller, isMicReady]);
+ 
+
+  // For receiver when he just received the phone 
+  useEffect(() => {
+    if (incomingOffer && !peerRef.current && isMicReady) {
+      acceptCall();
+    }
+  }, [incomingOffer, isMicReady])
 
   // Call duration timer
   useEffect(() => {
@@ -124,6 +147,7 @@ const VoiceCall = () => {
   const cleanup = (msg) => {
     peerRef.current?.destroy();
     sessionStorage.removeItem("outgoing-call");
+    socket?.emit("call:hangup", { targetId: calleeId });
     if (msg) alert(msg);
     navigate("/");
     console.log("Cleanup:", msg);
@@ -216,45 +240,27 @@ const VoiceCall = () => {
           </div>
         </div>
 
-        {/* Call controls */}
+      
+
+        {/*when call is made*/}
         <div className="w-full max-w-sm space-y-8">
           
           {/* Start call button */}
           {!peerRef.current && !incomingOffer && isCaller && (
            <div className="flex flex-col items-center space-y-2">
-           <p className="text-white text-lg">
-            To make a call click the button below.
-           </p>
+           {/* <p className="text-white text-lg">
+            
+           </p> */}
          
            <button 
-             onClick={startCall}
-             className="group w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 rounded-full flex items-center justify-center shadow-2xl transform hover:scale-110 active:scale-95 transition-all duration-200 ring-4 ring-green-400/20"
-           >
-             <Phone className="w-8 h-8 text-white group-hover:animate-bounce" />
-           </button>
-         </div>
-          )}
-          
-
-          {/* Incoming call controls */}
-          {incomingOffer && !peerRef.current && (
-            <div className="flex justify-center items-center space-x-16">
-              <button 
-                onClick={acceptCall}
-                className="group w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 rounded-full flex items-center justify-center shadow-2xl transform hover:scale-110 active:scale-95 transition-all duration-200 ring-4 ring-green-400/30"
-              >
-                <Phone className="w-8 h-8 text-white group-hover:rotate-12 transition-transform" />
-              </button>
-              
-              <button 
-                onClick={() => cleanup("Call rejected")}
+                onClick={() => cleanup("Call hang up while calling not even picked up by the callee")}
                 className="group w-20 h-20 bg-gradient-to-br from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-full flex items-center justify-center shadow-2xl transform hover:scale-110 active:scale-95 transition-all duration-200 ring-4 ring-red-400/30"
               >
                 <PhoneOff className="w-8 h-8 text-white group-hover:-rotate-12 transition-transform" />
               </button>
-            </div>
+         </div>
           )}
-
+        
           {/* Active call controls */}
           {peerRef.current && (
             <div className="space-y-6">
